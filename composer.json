@@ -1,5 +1,5 @@
 {
-  "name": "Syndesi/rest",
+  "name": "syndesi/rest",
   "description": "A small library with the goal of creating full REST-apps very easily.",
   "type": "libray",
   "keywords": ["REST", "YAML", "XML", "JSON"],
