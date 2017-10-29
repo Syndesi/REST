@@ -1,5 +1,5 @@
 <?php
-namespace Syndesi;
+namespace Syndesi\REST;
 
 /**
  * returns the formated size in KB, MB, GB and so on

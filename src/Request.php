@@ -1,5 +1,5 @@
 <?php
-namespace Syndesi;
+namespace Syndesi\REST;
 
 use \Symfony\Component\Yaml\Yaml;
 
@@ -22,14 +22,15 @@ class Request{
   protected $rawInput;
   protected $supportedMethods = ['GET', 'POST', 'PUT', 'DELETE'];
 
-  const DATE_FORMAT            = 'Y-m-dTH:i:s';
+  const DATE_TIMEZONE          = new \DateTimeZone('Europe/Berlin');
+  const DATE_FORMAT            = \DateTime::ATOM; // ISO 8601, can be replaced by a string like 'Y-m-d H:i:s'
   const FORMAT_JSON            = 'application/json';
   const FORMAT_XML             = 'application/xml';
   const FORMAT_YAML            = 'application/x-yaml';
   const FORMAT_FORM_URLENCODED = 'application/x-www-form-urlencoded';
   const FORMAT_FORM_DATA       = 'multipart/form-data';
   const FORMAT_OCTET_STREAM    = 'application/octet-stream';
-  const PATH_NAME              = '_PATH';
+  const PATH_NAME              = '_PATH'; // The "variable" which is used by .htaccess to store the end of the route.
   const OK                     = 'OK';
   const REQUEST_DENIED         = 'REQUEST_DENIED';
   const INVALID_REQUEST        = 'INVALID_REQUEST';

@@ -1,5 +1,5 @@
 <?php
-namespace Syndesi;
+namespace Syndesi\REST;
 
 /**
  * A small router.

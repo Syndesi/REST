@@ -1,5 +1,5 @@
 <?php
-namespace Syndesi;
+namespace Syndesi\REST;
 
 class Session{
 
