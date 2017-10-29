@@ -34,7 +34,7 @@ class Session {
    * @param string   $id    The id/key of the saved variable
    * @param variable $value The value of the saved variable
    */
-  public function set($id, $value){
+  public function set(string $id, $value){
     $_SESSION[$id] = $v;
   }
 
@@ -43,7 +43,7 @@ class Session {
    * @param  string   $id The key of the wanted variable
    * @return variable     The value of the wanted variable
    */
-  public function get($id){
+  public function get(string $id){
     if($this->is($id)){
       return $_SESSION[$id];
     }
@@ -55,7 +55,7 @@ class Session {
    * @param  string  $id The key of the variable
    * @return boolean     True: The variable exists, False: It does not exist
    */
-  public function is($id){
+  public function is(string $id){
     return isset($_SESSION[$id]);
   }
 
@@ -64,7 +64,7 @@ class Session {
    * @param  string $id The key of the variable
    * @return boolean    True: The variable does not exist anymore, False: An error occurred
    */
-  public function unset($id){
+  public function unset(string $id){
     if($this->is($id)){
       unset($_SESSION[$id]);
     }

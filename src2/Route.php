@@ -1,6 +1,8 @@
 <?php
 namespace Syndesi\REST;
 
+include 'Config.php';
+
 /**
  * A small router.
  * Inspired by nikic´s {@link http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html tutorial}.
@@ -19,26 +21,8 @@ class Route {
     ':dt}' => ':[0-9-:]+}',           //   datetime
     ':f}'  => ':[0-9.]+}'             //   floats
   ];
-  private $methods = [                // an array of all possible HTTP-methods
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'COPY',
-    'HEAD',
-    'OPTIONS',
-    'LINK',
-    'UNLINK',
-    'PURGE',
-    'LOCK',
-    'UNLOCK',
-    'PROPFIND',
-    'VIEW',
-    'TRACE'
-  ];
 
-  public function __construct($r){
+  public function __construct(Request $r){
     $this->r = $r;
     $this->addRoute('OPTIONS:/', function(){$this->getRoutes();}, 'Lists all available routes.');
   }
@@ -59,8 +43,8 @@ class Route {
    * @param function $func The function which should run when the route is fired.
    * @param string $desc   The description for the current route.
    */
-  public function addRoute($route, $func, $desc = 'No description available.'){
-    preg_match('/^('.implode('|', $this->methods).'):\//', $route, $tmp);
+  public function addRoute(string $route, $func, string $desc = 'No description available.'){
+    preg_match('/^('.implode('|', $config['methods']).'):\//', $route, $tmp);
     if(count($tmp) > 0){
       $this->routes[$route] = [
         'func' => $func,
@@ -86,7 +70,7 @@ class Route {
    * Resolves the current route.
    * @param  string $route The current route from the client.
    */
-  public function resolveRoute($route){
+  public function resolveRoute(string $route){
     foreach($this->routes as $i => $el){
       if($this->compareRoute($i, $route)){
         $el['func']($this->getArgs($i, $route));
@@ -110,7 +94,7 @@ class Route {
    * @param  string $check the route from the client
    * @return array         an associative array containing all variables
    */
-  public function getArgs($route, $check){
+  public function getArgs(string $route, string $check){
     $args = [];
     $route = explode('/', $route);
     $check = explode('/', $check);
@@ -143,7 +127,7 @@ class Route {
    * @param  string  $route  The route from the client
    * @return boolean         True: Both are matching, False: The route does not fulfill the preset
    */
-  protected function compareRoute($preset, $route){
+  protected function compareRoute(string $preset, string $route){
     $preset = explode('/', $preset);
     $route = explode('/', $route);
     if(count($preset) != count($route)){
@@ -163,7 +147,7 @@ class Route {
    * @param  string  $route  The level of the client's request
    * @return boolean         True: Both are matching, False: The route does not fulfill the preset
    */
-  protected function compareLevel($preset, $route){
+  protected function compareLevel(string $preset, string $route){
     preg_match('/^{.*}$/', $preset, $tmp);
     if(count($tmp) > 0){
       // regex/dynamic level
@@ -187,7 +171,7 @@ class Route {
    * @param  string $level The level from which the rule should be returned
    * @return array         ['name', 'regexRule']
    */
-  protected function getRule($level){
+  protected function getRule(string $level){
     $level = strtr($level, $this->regexShortcuts);
     $level = ltrim($level, '{');
     $level = rtrim($level, '}');
