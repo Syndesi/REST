@@ -8,6 +8,7 @@ try{
   $router->setRoute('GET', 'demo/', function($request, $args){$request->finish('demo');}, 'demo route');
   $router->setRoute('GET', 'regex/{r:a}/', function($request, $args){$request->finish($args);}, 'demo regex route');
   $router->resolve();
+  // test
   //$apiName = $r->api;
   //if(!ctype_alnum($apiName)){
   //  throw new Exception('The API-name must be alphanumeric.');
