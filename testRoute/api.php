@@ -7,6 +7,7 @@ try{
   $router = new Router(new ClientRequest());
   $router->setRoute('GET', 'demo/', function($request, $args){$request->finish('demo');}, 'demo route');
   $router->setRoute('GET', 'regex/{r:a}/', function($request, $args){$request->finish($args);}, 'demo regex route');
+  $router->setRoute('POST', 'file/', function($r, $a){saveFile($r, $a);}, 'demo file upload route');
   $router->resolve();
   // test 2
   //$apiName = $r->api;
@@ -27,3 +28,8 @@ try{
 }
 
 exit;
+
+
+function saveFile($request, $args){
+  $request->finish('File demo');
+}

@@ -2,7 +2,7 @@
 namespace Syndesi\REST;
 
 /**
- * A small router.
+ * A small router which supports static and variable routes (via regex).
  * Inspired by nikic´s {@link http://nikic.github.io/2014/02/18/Fast-request-routing-using-regular-expressions.html tutorial}.
  */
 class Router {
@@ -19,11 +19,19 @@ class Router {
     't' => '[0-9-:.]+'            // time and date values
   ];
 
+  /**
+   * A small router which supports static and variable routes, later defined by regex.
+   * @param ClientRequest $request Used in order to resolve the called route.
+   */
   public function __construct(ClientRequest $request){
     $this->request = $request;
     $this->setRoute('GET', '', function($request, $args){$this->help($request, $args);}, 'List of all functions which are supported at this API-level.');
   }
 
+  /**
+   * Tries to resolve the URL from it's internal request to any of the registered routes.
+   * The resolved route is then called and the execution is not stoped (but can be by e.g. `$this->request->finsih(...)`).
+   */
   public function resolve(){
     $possibleRoutes = [];
     $args           = [];
@@ -61,13 +69,14 @@ class Router {
       $this->request->abort('no route found :/');
     }
     $route['function']($this->request, $args);
-
-
-
-    //$args = [];
-    //$this->help($this->request, $args);
   }
 
+  /**
+   * Compares a single level. Non-static parts (regex) is supported.
+   * @param  string $pathLevel The level of the route, e.g. `{variable-name:regex-code}`.
+   * @param  string $urlLevel  The level of the URL, e.g. `page`.
+   * @return *                 Different formats, e.g. boolean for static routes and false/array for regex-routes.
+   */
   protected function compareLevel($pathLevel, $urlLevel){
     preg_match('/^{.*}$/', $pathLevel, $isRegex);
     if($isRegex){
@@ -92,6 +101,12 @@ class Router {
     return $pathLevel == $urlLevel; // static route
   }
 
+  /**
+   * Checks if a route is registered.
+   * @param  string  $method The HTTP-method under which this route is registrated.
+   * @param  string  $path   The plain path which is used by this route.
+   * @return boolean         True: The route is registered. False: It is not.
+   */
   public function isRoute($method, $path){
     $method = strtoupper($method);
     if(!$this->isMethod($method)){
@@ -100,6 +115,12 @@ class Router {
     return array_key_exists($path, $this->routes[$method]);
   }
 
+  /**
+   * Returns a route by it's method and plain path (regex is not checked).
+   * @param  string $method The HTTP-method under which this route is registrated.
+   * @param  string $path   The plain path which is used by this route.
+   * @return array          An array with the function and a brief explanation about this route.
+   */
   public function getRoute($method, $path){
     $method = strtoupper($method);
     if(!$this->isRoute($method, $path)){
@@ -108,6 +129,14 @@ class Router {
     return $this->routes[$method][$path];
   }
 
+  /**
+   * Adds a new route to this router.
+   * @param  string   $method      The type of HTTP-method which should trigger this route.
+   * @param  string   $path        The path which should trigger this function. E.g.: `static/route/with/{regex:a}`
+   * @param  function $function    The function which should be called when this route is triggered.
+   * @param  string   $description A brief explanation for this route. It's returned e.g. by the help-route.
+   * @return Router                This.
+   */
   public function setRoute($method, $path, $function, $description){
     $method = strtoupper($method);
     if(!$this->isMethod($method)){
@@ -117,14 +146,21 @@ class Router {
       'function'    => $function,
       'description' => $description
     ];
+    return $this;
   }
 
+  /**
+   * Checks if routes with the given method (e.g. 'GET') exist or not.
+   * @param  string  $method The type of HTTP-method.
+   * @return boolean         True: There are routes with this type of method. False: This method is not used by any route.
+   */
   public function isMethod($method){
     return array_key_exists(strtoupper($method), $this->routes);
   }
 
   /**
-   * Default helper function
+   * Default helper function.
+   * Returns all registrated functions and is called by default every time no other route matched.
    */
   protected function help($request, $args){
     $help = [];
