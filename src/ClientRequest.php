@@ -13,6 +13,7 @@ class ClientRequest extends Request {
   protected $dateFormat    = 'Y-d-mTG:i:sz';
   protected $indent        = true;
   protected $environment   = [];
+  protected $pathKey       = '__PATH';  // defined in .htaccess
   
   public function __construct(){
     $this->loadClientRequest();
@@ -64,10 +65,19 @@ class ClientRequest extends Request {
     if($obj['status']              === null){ unset($obj['status']); }
     if($obj['description']         === null){ unset($obj['description']); }
     if($obj['environment']['data'] ===   []){ unset($obj['environment']['data']); }
+    $this->setHeader('X-Powered-By', 'Syndesi');
     $this->setHeader('Content-Type', $this->outputFormat->getMimeType()[0].'; charset=utf-8');
     $this->sendHeader();
     echo($this->outputFormat->encode($obj, $this->indent));
     return $this;
+  }
+
+  public function enableCORS($allowedMethods = ['GET', 'POST', 'PUSH', 'DELETE'], $maxAge = 1000){
+    $this->setHeader('Access-Control-Allow-Origin', '*');
+    $this->setHeader('Access-Control-Allow-Credentials', 'true');
+    $this->setHeader('Access-Control-Allow-Methods', implode(', ', $allowedMethods));
+    $this->setHeader('Access-Control-Max-Age', $maxAge);
+    $this->setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, X-Auth-Token , Authorization');
   }
 
   // add additional environmental variables to the output
@@ -91,6 +101,10 @@ class ClientRequest extends Request {
   protected function decodeClientData(){
     $data = [];
     if(is_array($_GET)){
+      if(array_key_exists($this->pathKey, $_GET)){
+        $this->url = trim($_GET[$this->pathKey], '/');
+        unset($_GET[$this->pathKey]);
+      }
       $data = array_merge($data, $_GET);
     }
     if(is_array($decodedBody = $this->clientFormat->decode($this->body))){

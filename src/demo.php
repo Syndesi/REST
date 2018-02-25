@@ -2,9 +2,8 @@
 namespace Syndesi\REST;
 require_once '../vendor/autoload.php';
 
-$r = new ClientRequest;
 
-$router = new Router($r);
-$router->run();
-
-$r->finish();
+$router = new Router(new ClientRequest());
+//$router->request->enableCORS();
+$router->setRoute('GET', 'demo', function($request, $args){$request->finish('demo');}, 'demo route');
+$router->resolve();
