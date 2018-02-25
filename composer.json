@@ -1,5 +1,6 @@
 {
   "name": "syndesi/rest",
+  "version": "1.0.1",
   "description": "A small library with the goal of creating full REST-apps very easily.",
   "type": "libray",
   "keywords": ["REST", "YAML", "XML", "JSON"],
@@ -14,7 +15,6 @@
   ],
   "require": {
     "php": "^7.0",
-    "respect/validation": "^1.0",
     "symfony/yaml": "^3.0"
   },
   "require-dev": {
