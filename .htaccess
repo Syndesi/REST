@@ -1,4 +1,0 @@
-RewriteEngine On
-
-# rewrites API calls to the api file
-RewriteRule ^api/(.*)$ testRoute/api.php?__PATH=$1 [QSA,NC,L]
